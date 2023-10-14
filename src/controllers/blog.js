@@ -1,36 +1,17 @@
 const Category = require('../models/category');
 const Tag = require('../models/tag');
-const formidable = require('formidable');
 const slugify = require('slugify');
 const {stripHtml} = require('string-strip-html');
 const _ = require('lodash');
 const { errorHandler } = require('../helpers/dbErrorHandler');
-const fs = require('fs');
 const { smartTrim } = require('../helpers/blog');
 const Blog = require('../models/blog');
 
 
 exports.create = async(req, res) => {
-    let form = new formidable.IncomingForm();
-    form.keepExtensions = true;
-    form.parse(req, async(err, fields, files) => {
-        console.log(fields)
-        if (err) {
-            return res.status(400).json({
-                error: 'Image could not upload'
-            });
-        }
-
-        let { title, body, categories, tags,mdesc,photo } = fields;
-
-        title = title[0];
-        body = body[0];
-        categories = categories[0];
-        photo = photo[0];
-        tags = tags[0];
-        mdesc = mdesc[0];
-       
-        
+   
+    let { title, body, categories, tags,mdesc,photo } = req.body;
+     
         if (!title || !title.length) {
             return res.status(400).json({
                 error: 'title is required'
@@ -70,20 +51,9 @@ exports.create = async(req, res) => {
         let arrayOfCategories = categories && categories.split(',');
         blog.tags = tags
 
-        // let arrayOfTags = tags && tags.split(',');
-     
+      
 
-        // if (files.photo) {
-        //     if (files.photo.size > 10000000) {
-        //         return res.status(400).json({
-        //             error: 'Image should be less then 1mb in size'
-        //         });
-        //     }
-
-        //     blog.photo.data = fs.readFileSync(files.photo.path);
-        //     blog.photo.contentType = files.photo.type;
-         
-        // }
+   
 
          const result = await blog.save()
 
@@ -115,7 +85,7 @@ exports.create = async(req, res) => {
         //     }
 
            return res.json(pushCategory)
-        })
+        
 };
 
 // list, listAllBlogsCategoriesTags, read, remove, update
@@ -231,71 +201,6 @@ exports.remove = async(req, res) => {
     });
 };
 
-exports.update = async (req, res) => {
-    const slug = req.params.slug.toLowerCase();
-
-     const oldBlog = await Blog.findOne({ slug })
-
-     if(!oldBlog)
-     {
-        return res.status(400).json({
-            error: "Error Occured"
-        });
-     }
-
-        let form = new formidable.IncomingForm();
-        form.keepExtensions = true;
-
-        form.parse(req, async(err, fields, files) => {
-            if (err) {
-                return res.status(400).json({
-                    error: 'Image could not upload'
-                });
-            }
-
-            let slugBeforeMerge = oldBlog.slug;
-            oldBlog = _.merge(oldBlog, fields);
-            oldBlog.slug = slugBeforeMerge;
-
-            const { body, desc, categories, tags } = fields;
-
-            if (body) {
-                oldBlog.excerpt = smartTrim(body, 320, ' ', ' ...');
-                oldBlog.mdesc = stripHtml(body.substring(0, 160));
-            }
-
-            if (categories) {
-                oldBlog.categories = categories.split(',');
-            }
-
-            if (tags) {
-                oldBlog.tags = tags.split(',');
-            }
-
-            // if (files.photo) {
-            //     if (files.photo.size > 10000000) {
-            //         return res.status(400).json({
-            //             error: 'Image should be less then 1mb in size'
-            //         });
-            //     }
-            //     oldBlog.photo.data = fs.readFileSync(files.photo.path);
-            //     oldBlog.photo.contentType = files.photo.type;
-            // }
-
-                const saveBlog = await oldBlog.save()
-
-                if(!saveBlog)
-                {
-                    return res.status(400).json({
-                        error: "Error While Saving"
-                    });
-    
-                }
-                return res.json(result);
-        });
-        
-       
-};
 
 exports.photo = (req, res) => {
     const slug = req.params.slug.toLowerCase();
