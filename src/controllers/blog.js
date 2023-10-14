@@ -69,7 +69,7 @@ exports.create = async(req, res) => {
         // categories and tags
         let arrayOfCategories = categories && categories.split(',');
         blog.tags = tags
-        
+
         // let arrayOfTags = tags && tags.split(',');
      
 
