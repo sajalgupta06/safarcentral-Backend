@@ -13,20 +13,21 @@ const {
     blogsByCategory,
     
 } = require('../controllers/blog');
+const { xApi } = require('../controllers/auth');
 
 
-router.post('/blog', create);
+router.post('/blog', xApi,create);
 router.get('/blogs', list);
 router.post('/blogs-categories-tags', listAllBlogsCategoriesTags);
 router.post('/blogsByCategory', blogsByCategory);
 router.get('/blog/:slug', read);
-router.delete('/blog/:slug',remove);
+router.delete('/blog/:slug', xApi,remove);
 router.get('/blog/photo/:slug', photo);
 router.post('/blogs/related', listRelated);
 router.get('/blogs/search', listSearch);
 
 // auth user blog crud
-router.post('/user/blog', create);
-router.delete('/user/blog/:slug' , remove);
+// router.post('/user/blog',  create);
+// router.delete('/user/blog/:slug' , remove);
 
 module.exports = router;

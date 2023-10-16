@@ -5,10 +5,14 @@ const { create, list, read, remove } = require('../controllers/category');
 // validators
 const { runValidation } = require('../validators');
 const { categoryCreateValidator } = require('../validators/category');
+const { xApi } = require('../controllers/auth');
 
-router.post('/category', categoryCreateValidator, runValidation, create);
+
 router.get('/categories', list);
 router.get('/category/:slug', read);
-router.delete('/category/:slug',  remove);
+
+
+router.post('/category', xApi,categoryCreateValidator, runValidation, create);
+router.delete('/category/:slug', xApi , remove);
 
 module.exports = router;
