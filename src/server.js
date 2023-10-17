@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
 require('dotenv').config();
+require("../src/lib/cache")
 // bring routes
 const blogRoutes = require('./routes/blog');
 const categoryRoutes = require('./routes/category');

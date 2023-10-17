@@ -14,9 +14,10 @@ const {
     
 } = require('../controllers/blog');
 const { xApi } = require('../controllers/auth');
+const cleanCache = require('../middleware/cleanCache');
 
 
-router.post('/blog', xApi,create);
+router.post('/blog', xApi, cleanCache,create);
 router.get('/blogs', list);
 router.post('/blogs-categories-tags', listAllBlogsCategoriesTags);
 router.post('/blogsByCategory', blogsByCategory);

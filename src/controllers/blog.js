@@ -84,6 +84,7 @@ exports.create = async(req, res) => {
         //         });
         //     }
 
+       
            return res.json(pushCategory)
         
 };
@@ -94,7 +95,7 @@ exports.list = async (req, res) => {
      const blogs = await Blog.find({})
         .populate('categories', '_id name slug')
         .populate('tags', '_id name slug')
-        .select('_id title slug photo excerpt mdesc  categories tags  createdAt updatedAt ').sort({"updatedAt":-1})
+        .select('_id title slug photo excerpt mdesc  categories tags  createdAt updatedAt ').sort({"updatedAt":-1}).cache({ key: "allBlogs" })
 
         if(blogs)
         {
@@ -174,7 +175,7 @@ exports.read = async(req, res) => {
         // .select("-photo")
         .populate('categories', '_id name slug')
         .populate('tags', '_id name slug')
-        .select('_id title body photo slug mtitle mdesc categories tags  createdAt updatedAt')
+        .select('_id title body photo slug mtitle mdesc categories tags  createdAt updatedAt').cache({ key: slug })
        
         if(!blog)
         {
