@@ -1,7 +1,7 @@
 exports.xApi = (req, res, next) => {
 
   req.apiKey = req.headers["x-api-key"]
-console.log(req.apiKey)
+  console.log(req.apiKey)
 
   const apiKey = process.env.xApiKey;
 

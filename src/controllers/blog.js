@@ -6,12 +6,30 @@ const _ = require('lodash');
 const { errorHandler } = require('../helpers/dbErrorHandler');
 const { smartTrim } = require('../helpers/blog');
 const Blog = require('../models/blog');
+const formidable = require('formidable');
 
 
 exports.create = async(req, res) => {
-   
-    let { title, body, categories, tags,mdesc,photo } = req.body;
-     
+    let form = new formidable.IncomingForm();
+    form.keepExtensions = true;
+    form.parse(req, async(err, fields, files) => {
+        console.log(fields)
+        if (err) {
+            return res.status(400).json({
+                error: 'Image could not upload'
+            });
+        }
+
+        let { title, body, categories, tags,mdesc,photo } = fields;
+
+        title = title[0];
+        body = body[0];
+        categories = categories[0];
+        photo = photo[0];
+        tags = tags[0];
+        mdesc = mdesc[0];
+       
+        
         if (!title || !title.length) {
             return res.status(400).json({
                 error: 'title is required'
@@ -51,9 +69,20 @@ exports.create = async(req, res) => {
         let arrayOfCategories = categories && categories.split(',');
         blog.tags = tags
 
-      
+        // let arrayOfTags = tags && tags.split(',');
+     
 
-   
+        // if (files.photo) {
+        //     if (files.photo.size > 10000000) {
+        //         return res.status(400).json({
+        //             error: 'Image should be less then 1mb in size'
+        //         });
+        //     }
+
+        //     blog.photo.data = fs.readFileSync(files.photo.path);
+        //     blog.photo.contentType = files.photo.type;
+         
+        // }
 
          const result = await blog.save()
 
@@ -85,8 +114,26 @@ exports.create = async(req, res) => {
         //     }
 
            return res.json(pushCategory)
-        
+        })
 };
+
+// list, listAllBlogsCategoriesTags, read, remove, update
+
+exports.list = async (req, res) => {
+     const blogs = await Blog.find({})
+        .populate('categories', '_id name slug')
+        .populate('tags', '_id name slug')
+        .select('_id title slug photo excerpt mdesc  categories tags  createdAt updatedAt ').sort({"updatedAt":-1})
+
+        if(blogs)
+        {
+            return res.json({statusCode:"200",data:blogs})
+        }
+        else{
+            return res.json({error:"Error Occurred"})
+        }
+};
+
 
 // list, listAllBlogsCategoriesTags, read, remove, update
 
