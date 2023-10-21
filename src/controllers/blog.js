@@ -219,7 +219,7 @@ exports.read = async(req, res) => {
 exports.remove = async(req, res) => {
     const slug = req.params.slug.toLowerCase();
     const exists = await  Blog.findOneAndRemove({ slug })
-
+    clearCache("allBlogs")
     if(!exists)
     {
         return res.json({
