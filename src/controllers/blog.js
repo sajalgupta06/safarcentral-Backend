@@ -6,7 +6,8 @@ const _ = require('lodash');
 const { errorHandler } = require('../helpers/dbErrorHandler');
 const { smartTrim } = require('../helpers/blog');
 const Blog = require('../models/blog');
-const formidable  = require("formidable")
+const formidable  = require("formidable");
+const { clearCache } = require('../lib/cache');
 
 exports.create = async(req, res) => {
     let form = new formidable.IncomingForm();
@@ -83,6 +84,8 @@ exports.create = async(req, res) => {
          
         // }
 
+
+        clearCache("allBlogs")
          const result = await blog.save()
 
             if (!result) {
